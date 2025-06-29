@@ -37,33 +37,29 @@ A full-stack hotel booking application built with React frontend and Express.js 
 ### Installation
 
 1. **Clone the repository**
-   ```bash
+   bash
    git clone https://github.com/Pankaj27-prog/stayfinder.git
    cd stayfinder
-   ```
 
 2. **Install dependencies**
-   ```bash
+   bash
    npm install
-   ```
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
-   ```env
+   env
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
    PORT=5000
-   ```
 
 4. **Start the development server**
-   ```bash
+   bash
    # Start both frontend and backend
    npm run dev
-   
+
    # Or start them separately
    npm start          # Frontend (React)
    npm run server     # Backend (Express)
-   ```
 
 5. **Open your browser**
    - Frontend: http://localhost:3000
@@ -71,7 +67,6 @@ A full-stack hotel booking application built with React frontend and Express.js 
 
 ## 📁 Project Structure
 
-```
 stayfinder/
 ├── public/                 # Static files
 ├── src/                    # React frontend
@@ -85,7 +80,6 @@ stayfinder/
 │   └── index.js           # Server entry point
 ├── package.json           # Dependencies and scripts
 └── README.md             # Project documentation
-```
 
 ## 🌐 API Endpoints
 
