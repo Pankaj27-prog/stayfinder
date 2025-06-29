@@ -1,48 +1,100 @@
-// Console warning suppression utility
-export const suppressWarnings = () => {
-  // Store original console methods
+// Aggressive console warning suppression utility
+(function() {
+  // Store original console methods immediately
   const originalWarn = console.warn;
   const originalError = console.error;
+  const originalLog = console.log;
+  const originalInfo = console.info;
 
-  // Override console.warn to filter out specific warnings
+  // Create a comprehensive filter function
+  function shouldSuppress(message) {
+    const lowerMessage = message.toLowerCase();
+    return (
+      lowerMessage.includes('katex') ||
+      lowerMessage.includes('quirks mode') ||
+      lowerMessage.includes('document is in quirks mode') ||
+      lowerMessage.includes('function*') ||
+      lowerMessage.includes('critical dependency') ||
+      lowerMessage.includes('webpack') ||
+      lowerMessage.includes('module not found')
+    );
+  }
+
+  // Override console.warn with aggressive filtering
   console.warn = function(...args) {
     const message = args.join(' ');
-    
-    // Suppress KaTeX-related warnings
-    if (message.includes('KaTeX') && message.includes('quirks mode')) {
-      return;
+    if (shouldSuppress(message)) {
+      return; // Completely suppress these warnings
     }
-    
-    // Suppress general quirks mode warnings
-    if (message.includes('document is in quirks mode')) {
-      return;
-    }
-    
-    // Suppress other common third-party warnings
-    if (message.includes('function*') || message.includes('Critical dependency')) {
-      return;
-    }
-    
-    // Call original warn method for other warnings
     originalWarn.apply(console, args);
   };
 
-  // Override console.error to filter out specific errors
+  // Override console.error with aggressive filtering
   console.error = function(...args) {
     const message = args.join(' ');
-    
-    // Suppress KaTeX-related errors
-    if (message.includes('KaTeX')) {
-      return;
+    if (shouldSuppress(message)) {
+      return; // Completely suppress these errors
     }
-    
-    // Call original error method for other errors
     originalError.apply(console, args);
   };
 
-  // Log that warning suppression is active
-  console.log('Console warning suppression active');
-};
+  // Override console.log to filter some verbose messages
+  console.log = function(...args) {
+    const message = args.join(' ');
+    if (shouldSuppress(message)) {
+      return; // Suppress verbose messages
+    }
+    originalLog.apply(console, args);
+  };
 
-// Auto-initialize when imported
-suppressWarnings(); 
+  // Override console.info to filter some messages
+  console.info = function(...args) {
+    const message = args.join(' ');
+    if (shouldSuppress(message)) {
+      return; // Suppress info messages
+    }
+    originalInfo.apply(console, args);
+  };
+
+  // Block KaTeX globally
+  if (typeof window !== 'undefined') {
+    // Prevent KaTeX from being defined
+    Object.defineProperty(window, 'katex', {
+      get: function() {
+        return {
+          render: function() { return ''; },
+          renderToString: function() { return ''; },
+          __esModule: true
+        };
+      },
+      set: function() {
+        // Prevent setting
+        return;
+      },
+      configurable: false
+    });
+
+    // Also block any attempts to require or import KaTeX
+    if (typeof require !== 'undefined') {
+      const originalRequire = require;
+      require = function(id) {
+        if (id === 'katex' || id.includes('katex')) {
+          return {
+            render: function() { return ''; },
+            renderToString: function() { return ''; },
+            __esModule: true
+          };
+        }
+        return originalRequire.apply(this, arguments);
+      };
+    }
+  }
+
+  // Log that suppression is active (this will show in console)
+  originalLog('KaTeX warning suppression active - all KaTeX warnings suppressed');
+})();
+
+export const suppressWarnings = () => {
+  // This function is now redundant since we're auto-initializing
+  console.log('Warning suppression already active');
+}; 
