@@ -20,8 +20,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
-/* Suppress KaTeX warnings */
-.katex {
-  font-size: 1em !important;
-}

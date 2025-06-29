@@ -1,10 +1,10 @@
 services:
-  # Backend API Service
+  # Main StayFinder Application (Frontend + Backend)
   - type: web
-    name: stayfinder-backend
+    name: stayfinder-app
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: npm run server
     envVars:
       - key: NODE_ENV
@@ -14,15 +14,4 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
-        value: 10000
-
-  # Frontend React App
-  - type: web
-    name: stayfinder-frontend
-    env: static
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://stayfinder-backend.onrender.com 
+        value: 10000 

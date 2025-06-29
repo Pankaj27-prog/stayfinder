@@ -1,18 +1,26 @@
 #!/bin/bash
 
+# Exit on any error
+set -e
+
+echo "Starting build process..."
+
 # Install dependencies
 echo "Installing dependencies..."
 npm install
 
-# Build React app
+# Build the React app
 echo "Building React app..."
 npm run build
 
-# Check if build was successful
+# Verify build was created
 if [ -d "build" ]; then
     echo "Build completed successfully!"
+    echo "Build directory contents:"
     ls -la build/
 else
-    echo "Build failed!"
+    echo "ERROR: Build directory not found!"
     exit 1
-fi 
+fi
+
+echo "Build process completed!" 
