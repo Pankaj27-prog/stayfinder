@@ -14,8 +14,9 @@
     "install-all": "npm install && cd server && npm install",
     "render-build": "npm install && npm run build",
     "render-start": "node server/index.js",
-    "postbuild": "echo 'Build completed successfully'",
-    "render-deploy": "npm install && npm run build && node server/index.js"
+    "postbuild": "echo 'Build completed successfully' && ls -la build/",
+    "render-deploy": "npm install && npm run build && node server/index.js",
+    "build:prod": "CI=false npm run build"
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

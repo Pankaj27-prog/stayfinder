@@ -7,11 +7,28 @@ const authRoutes = require('./routes/auth.js');
 const bookingRoutes = require('./routes/booking.js');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000; // Use Render's PORT or default to 10000
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://pankaj_sarwa:UEbeqOCj7qdrvQHi@cluster0.roqkcrc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-app.use(cors());
-app.use(express.json());
+// Enhanced CORS configuration
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://stayfinder-kqyr.onrender.com', 'https://stayfinder-app.onrender.com']
+    : true,
+  credentials: true
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // API Routes
 app.use('/api', authRoutes);
@@ -20,6 +37,10 @@ app.use('/api', bookingRoutes);
 // Check if build directory exists
 const buildPath = path.join(__dirname, '../build');
 const indexPath = path.join(buildPath, 'index.html');
+
+console.log('Build path:', buildPath);
+console.log('Build exists:', fs.existsSync(buildPath));
+console.log('Index exists:', fs.existsSync(indexPath));
 
 // Serve static files from the React build directory if it exists
 if (fs.existsSync(buildPath)) {
@@ -43,6 +64,8 @@ if (fs.existsSync(buildPath)) {
             <h1>StayFinder</h1>
             <p class="error">Build files not found. Please check the build process.</p>
             <p>If you're deploying, please ensure the build command completed successfully.</p>
+            <p>Build path: ${buildPath}</p>
+            <p>Index path: ${indexPath}</p>
           </body>
         </html>
       `);
@@ -95,6 +118,7 @@ if (fs.existsSync(buildPath)) {
             <div class="spinner"></div>
             <p>Application is building. Please wait a moment and refresh the page.</p>
             <p><small>This may take a few minutes on first deployment.</small></p>
+            <p><small>Build path: ${buildPath}</small></p>
           </div>
           <script>
             // Auto-refresh every 30 seconds
@@ -106,13 +130,37 @@ if (fs.existsSync(buildPath)) {
   });
 }
 
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`Build path exists: ${fs.existsSync(buildPath)}`);
-      console.log(`Index file exists: ${fs.existsSync(indexPath)}`);
-    });
-  })
-  .catch(err => console.error('MongoDB connection error:', err)); 
+// Enhanced error handling
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+// Connect to MongoDB and start server
+mongoose.connect(MONGODB_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
+.then(() => {
+  console.log('Connected to MongoDB successfully');
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Build path exists: ${fs.existsSync(buildPath)}`);
+    console.log(`Index file exists: ${fs.existsSync(indexPath)}`);
+    console.log(`Server is ready to handle requests`);
+  });
+})
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  // Still start the server even if MongoDB fails
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT} (MongoDB connection failed)`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}); 

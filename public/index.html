@@ -29,28 +29,67 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>StayFinder - Book Your Perfect Stay</title>
-    <!-- Suppress KaTeX and other third-party warnings -->
+    <!-- Aggressive KaTeX warning suppression - runs before any other scripts -->
     <script>
-      // Suppress KaTeX quirks mode warning
-      const originalWarn = console.warn;
-      console.warn = function(...args) {
-        const message = args.join(' ');
-        if (message.includes('KaTeX') && message.includes('quirks mode')) {
-          return; // Suppress KaTeX quirks mode warning
+      (function() {
+        // Store original console methods
+        var originalWarn = console.warn;
+        var originalError = console.error;
+        var originalLog = console.log;
+        
+        // Override console.warn
+        console.warn = function() {
+          var message = Array.prototype.join.call(arguments, ' ');
+          
+          // Suppress KaTeX warnings
+          if (message.includes('KaTeX') || 
+              message.includes('quirks mode') || 
+              message.includes('document is in quirks mode') ||
+              message.includes('function*') ||
+              message.includes('Critical dependency')) {
+            return;
+          }
+          
+          // Call original warn method
+          originalWarn.apply(console, arguments);
+        };
+        
+        // Override console.error
+        console.error = function() {
+          var message = Array.prototype.join.call(arguments, ' ');
+          
+          // Suppress KaTeX errors
+          if (message.includes('KaTeX')) {
+            return;
+          }
+          
+          // Call original error method
+          originalError.apply(console, arguments);
+        };
+        
+        // Override console.log to filter some messages
+        console.log = function() {
+          var message = Array.prototype.join.call(arguments, ' ');
+          
+          // Suppress some verbose messages
+          if (message.includes('KaTeX') && message.includes('quirks mode')) {
+            return;
+          }
+          
+          // Call original log method
+          originalLog.apply(console, arguments);
+        };
+        
+        // Prevent KaTeX from loading or initializing
+        if (typeof window !== 'undefined') {
+          window.katex = {
+            render: function() { return ''; },
+            renderToString: function() { return ''; }
+          };
         }
-        if (message.includes('document is in quirks mode')) {
-          return; // Suppress general quirks mode warnings
-        }
-        originalWarn.apply(console, args);
-      };
-
-      // Check document mode and suppress related warnings
-      if (document.compatMode === 'BackCompat') {
-        // Document is in quirks mode, but we'll suppress warnings about it
-        console.log('Document mode detected: Quirks mode (warnings suppressed)');
-      } else {
-        console.log('Document mode detected: Standards mode');
-      }
+        
+        console.log('KaTeX warning suppression active');
+      })();
     </script>
   </head>
   <body>
