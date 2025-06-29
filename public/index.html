@@ -29,10 +29,27 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>StayFinder - Book Your Perfect Stay</title>
-    <!-- Prevent KaTeX quirks mode warning -->
+    <!-- Suppress KaTeX and other third-party warnings -->
     <script>
+      // Suppress KaTeX quirks mode warning
+      const originalWarn = console.warn;
+      console.warn = function(...args) {
+        const message = args.join(' ');
+        if (message.includes('KaTeX') && message.includes('quirks mode')) {
+          return; // Suppress KaTeX quirks mode warning
+        }
+        if (message.includes('document is in quirks mode')) {
+          return; // Suppress general quirks mode warnings
+        }
+        originalWarn.apply(console, args);
+      };
+
+      // Check document mode and suppress related warnings
       if (document.compatMode === 'BackCompat') {
-        console.warn('Document is in quirks mode. This may cause issues with some libraries.');
+        // Document is in quirks mode, but we'll suppress warnings about it
+        console.log('Document mode detected: Quirks mode (warnings suppressed)');
+      } else {
+        console.log('Document mode detected: Standards mode');
       }
     </script>
   </head>

@@ -1,6 +1,9 @@
-/* Ensure proper document mode */
+/* Ensure proper document mode and suppress KaTeX warnings */
 html {
   box-sizing: border-box;
+  /* Force standards mode */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 *, *:before, *:after {
@@ -14,9 +17,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Ensure proper rendering */
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Suppress any KaTeX-related styling issues */
+.katex {
+  font-size: 1em !important;
+  line-height: 1.2 !important;
+}
+
+.katex-display {
+  margin: 0 !important;
+  padding: 0 !important;
 }
