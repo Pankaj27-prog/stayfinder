@@ -10,13 +10,11 @@
     "server": "node server/index.js",
     "server:dev": "nodemon server/index.js",
     "dev": "concurrently \"npm run server:dev\" \"npm start\"",
-    "dev:prod": "npm run build && npm run server",
     "install-all": "npm install && cd server && npm install && cd ..",
-    "render-build": "npm run install-all && npm run build",
-    "render-start": "cd server && npm install && cd .. && node server/index.js",
-    "postbuild": "echo 'Build completed successfully' && ls -la build/ || dir build/",
-    "render-deploy": "npm install && npm run build && node server/index.js",
-    "build:prod": "CI=false npm run build"
+    "render-build": "npm run install-all && npm run build:prod",
+    "render-start": "NODE_ENV=production node server/index.js",
+    "postbuild": "echo Build completed successfully",
+    "build:prod": "CI=false GENERATE_SOURCEMAP=false react-scripts build"
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

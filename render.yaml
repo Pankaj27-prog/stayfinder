@@ -5,10 +5,8 @@ services:
     env: node
     plan: free
     buildCommand: |
-      npm install
-      cd server && npm install
-      cd ..
-      CI=false npm run build
+      npm run install-all
+      npm run build:prod
     startCommand: npm run render-start
     envVars:
       - key: NODE_ENV
@@ -18,9 +16,6 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
-        fromService:
-          type: web
-          name: stayfinder-app
-          envVarKey: PORT
+        value: 5000
     healthCheckPath: /health
     autoDeploy: true 
