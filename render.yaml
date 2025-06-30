@@ -6,8 +6,8 @@ services:
     plan: free
     buildCommand: |
       npm run install-all
-      npm run build:prod
-    startCommand: npm run render-start
+      NODE_ENV=production npm run build:prod
+    startCommand: NODE_ENV=production npm run render-start
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,5 +17,7 @@ services:
         generateValue: true
       - key: PORT
         value: 5000
+      - key: GENERATE_SOURCEMAP
+        value: false
     healthCheckPath: /health
     autoDeploy: true 

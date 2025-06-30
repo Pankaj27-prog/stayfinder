@@ -10,6 +10,21 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://pankaj_sarwa:UEbeqOCj7qdrvQHi@cluster0.roqkcrc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
+// Security middleware
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data: https:; " +
+    "font-src 'self' data: https:; " +
+    "connect-src 'self' https:; " +
+    "frame-src 'self';"
+  );
+  next();
+});
+
 // Enhanced CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -37,17 +52,34 @@ app.use('/api', authRoutes);
 app.use('/api', bookingRoutes);
 
 // Serve static files from the React build directory
-const buildPath = path.resolve(__dirname, '../build');
-console.log('Build path:', buildPath);
-console.log('Build exists:', fs.existsSync(buildPath));
-
 if (process.env.NODE_ENV === 'production') {
-  // Serve static files
-  app.use(express.static(buildPath));
+  const buildPath = path.resolve(__dirname, '../build');
+  
+  // Serve static files with proper caching
+  app.use(express.static(buildPath, {
+    maxAge: '1y',
+    etag: true,
+    lastModified: true
+  }));
 
-  // Handle React routing
+  // Serve static assets from the assets directory if it exists
+  const assetsPath = path.join(buildPath, 'assets');
+  if (fs.existsSync(assetsPath)) {
+    app.use('/assets', express.static(assetsPath, {
+      maxAge: '1y',
+      etag: true,
+      lastModified: true
+    }));
+  }
+
+  // Handle React routing - must be after static file serving
   app.get('*', (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
+  });
+} else {
+  // Development mode - redirect to React dev server
+  app.get('/', (req, res) => {
+    res.redirect('http://localhost:3000');
   });
 }
 
@@ -72,7 +104,6 @@ mongoose.connect(MONGODB_URI, {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`Build path exists: ${fs.existsSync(buildPath)}`);
     console.log(`Server is ready to handle requests`);
   });
 })
