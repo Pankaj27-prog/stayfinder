@@ -60,32 +60,21 @@
   if (typeof window !== 'undefined') {
     // Prevent KaTeX from being defined
     Object.defineProperty(window, 'katex', {
-      get: function() {
-        return {
-          render: function() { return ''; },
-          renderToString: function() { return ''; },
-          __esModule: true
-        };
+      value: {
+        render: () => '',
+        renderToString: () => '',
+        __esModule: true
       },
-      set: function() {
-        // Prevent setting
-        return;
-      },
+      writable: false,
       configurable: false
     });
 
-    // Also block any attempts to require or import KaTeX
-    if (typeof require !== 'undefined') {
-      const originalRequire = require;
-      require = function(id) {
-        if (id === 'katex' || id.includes('katex')) {
-          return {
-            render: function() { return ''; },
-            renderToString: function() { return ''; },
-            __esModule: true
-          };
-        }
-        return originalRequire.apply(this, arguments);
+    // Create a mock module for KaTeX
+    if (typeof window.__mockKaTeX === 'undefined') {
+      window.__mockKaTeX = {
+        render: () => '',
+        renderToString: () => '',
+        __esModule: true
       };
     }
   }
