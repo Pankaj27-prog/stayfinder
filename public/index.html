@@ -1,38 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script>
-    // IMMEDIATE KaTeX suppression - runs before anything else
-    (function() {
-      // Override console methods immediately
-      var originalWarn = console.warn;
-      var originalError = console.error;
-      var originalLog = console.log;
-      
-      console.warn = function() {
-        var message = Array.prototype.join.call(arguments, ' ');
-        if (message.includes('KaTeX') || message.includes('quirks mode') || message.includes('function*')) {
-          return;
-        }
-        originalWarn.apply(console, arguments);
-      };
-      
-      console.error = function() {
-        var message = Array.prototype.join.call(arguments, ' ');
-        if (message.includes('KaTeX')) {
-          return;
-        }
-        originalError.apply(console, arguments);
-      };
-      
-      // Block KaTeX globally
-      if (typeof window !== 'undefined') {
-        window.katex = { render: function() { return ''; }, renderToString: function() { return ''; } };
-      }
-    })();
-    </script>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#23272f" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -61,68 +31,6 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>StayFinder - Book Your Perfect Stay</title>
-    <!-- Additional KaTeX warning suppression - runs before any other scripts -->
-    <script>
-      (function() {
-        // Store original console methods
-        var originalWarn = console.warn;
-        var originalError = console.error;
-        var originalLog = console.log;
-        
-        // Override console.warn
-        console.warn = function() {
-          var message = Array.prototype.join.call(arguments, ' ');
-          
-          // Suppress KaTeX warnings
-          if (message.includes('KaTeX') || 
-              message.includes('quirks mode') || 
-              message.includes('document is in quirks mode') ||
-              message.includes('function*') ||
-              message.includes('Critical dependency')) {
-            return;
-          }
-          
-          // Call original warn method
-          originalWarn.apply(console, arguments);
-        };
-        
-        // Override console.error
-        console.error = function() {
-          var message = Array.prototype.join.call(arguments, ' ');
-          
-          // Suppress KaTeX errors
-          if (message.includes('KaTeX')) {
-            return;
-          }
-          
-          // Call original error method
-          originalError.apply(console, arguments);
-        };
-        
-        // Override console.log to filter some messages
-        console.log = function() {
-          var message = Array.prototype.join.call(arguments, ' ');
-          
-          // Suppress some verbose messages
-          if (message.includes('KaTeX') && message.includes('quirks mode')) {
-            return;
-          }
-          
-          // Call original log method
-          originalLog.apply(console, arguments);
-        };
-        
-        // Prevent KaTeX from loading or initializing
-        if (typeof window !== 'undefined') {
-          window.katex = {
-            render: function() { return ''; },
-            renderToString: function() { return ''; }
-          };
-        }
-        
-        console.log('KaTeX warning suppression active');
-      })();
-    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

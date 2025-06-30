@@ -5,10 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { suppressWarnings } from './utils/suppressWarnings';
 //import './styles/global.css'; // Optional: your global styles or Tailwind import
 
-// Import console warning suppression utility
-import './utils/consoleSuppress';
+// Initialize warning suppression
+suppressWarnings();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
