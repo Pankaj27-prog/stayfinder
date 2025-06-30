@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://stayfinder-kqyr.onrender.com']
-    : 'http://localhost:3000',
+    : 'https://stayfinder-kqyr.onrender.com',
   credentials: true
 }));
 
