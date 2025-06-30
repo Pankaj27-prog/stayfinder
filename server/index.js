@@ -78,7 +78,7 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(buildPath, 'index.html'));
   });
 } else {
-  // Development mode - redirect to React dev server
+  // Development mode - redirect to React dev server only on root
   app.get('/', (req, res) => {
     res.redirect(CLIENT_URL);
   });
